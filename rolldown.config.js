@@ -32,8 +32,8 @@ const name = packageOptions.filename || path.basename(packageDir)
 scanEnums()
 const [enumPlugin, enumDefines] = inlineEnums()
 
-// /** @typedef {'cjs' | 'esm-bundler' | 'global' | 'global-runtime' | 'esm-browser' | 'esm-bundler-runtime' | 'esm-browser-runtime'} PackageFormat */
-/** @typedef {'cjs' | 'esm-bundler' | 'esm-browser' | 'esm-bundler-runtime' | 'esm-browser-runtime'} PackageFormat */
+/** @typedef {'cjs' | 'esm-bundler' | 'global' | 'global-runtime' | 'esm-browser' | 'esm-bundler-runtime' | 'esm-browser-runtime'} PackageFormat */
+// /** @typedef {'cjs' | 'esm-bundler' | 'esm-browser' | 'esm-bundler-runtime' | 'esm-browser-runtime'} PackageFormat */
 
 /** @type {Record<PackageFormat, import('rolldown').OutputOptions>} */
 const outputConfigs = {
@@ -49,10 +49,10 @@ const outputConfigs = {
     entryFileNames: `${name}.cjs.js`,
     format: 'cjs',
   },
-  // global: {
-  //   entryFileNames: `dist/${name}.global.js`,
-  //   format: 'iife',
-  // },
+  global: {
+    entryFileNames: `dist/${name}.global.js`,
+    format: 'iife',
+  },
   // runtime-only builds, for main "vue" package only
   'esm-bundler-runtime': {
     entryFileNames: `${name}.runtime.esm-bundler.js`,
@@ -62,10 +62,10 @@ const outputConfigs = {
     entryFileNames: `${name}.runtime.esm-browser.js`,
     format: 'es',
   },
-  // 'global-runtime': {
-  //   entryFileNames: `dist/${name}.runtime.global.js`,
-  //   format: 'iife',
-  // },
+  'global-runtime': {
+    entryFileNames: `dist/${name}.runtime.global.js`,
+    format: 'iife',
+  },
 }
 
 /** @type {ReadonlyArray<PackageFormat>} */
@@ -350,27 +350,28 @@ function createMinifiedConfig(/** @type {PackageFormat} */ format) {
         '.prod.js',
       ),
       format: outputConfigs[format].format,
+      minify: true,
     },
-    [
-      {
-        name: 'swc-minify',
+    // [
+    //   {
+    //     name: 'swc-minify',
 
-        async renderChunk(
-          contents,
-          _,
-          { format, sourcemap, sourcemapExcludeSources },
-        ) {
-          const { code, map } = await minifySwc(contents, {
-            module: format === 'es',
-            compress: true,
-            mangle: true,
-            sourceMap: !!sourcemap,
-            inlineSourcesContent: !sourcemapExcludeSources,
-          })
+    //     async renderChunk(
+    //       contents,
+    //       _,
+    //       { format, sourcemap, sourcemapExcludeSources },
+    //     ) {
+    //       const { code, map } = await minifySwc(contents, {
+    //         module: format === 'es',
+    //         compress: true,
+    //         mangle: true,
+    //         sourceMap: !!sourcemap,
+    //         inlineSourcesContent: !sourcemapExcludeSources,
+    //       })
 
-          return { code, map: map || null }
-        },
-      },
-    ],
+    //       return { code, map: map || null }
+    //     },
+    //   },
+    // ],
   )
 }
